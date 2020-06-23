@@ -9,7 +9,7 @@ from json.decoder import JSONDecodeError
 import time
 
 # GLOBAL
-username = sys.argv[1]
+username = sys.argv[1] # Spotify name in command line after runnong pythong e.g. "python main.py usernameHere"
 
 # FUNCTIONS
 scope = 'user-read-private user-read-playback-state user-modify-playback-state user-read-currently-playing'
@@ -28,18 +28,24 @@ except:
 spotifyObject = spotipy.Spotify(auth=token)
 
 
-def songChangeCheck(currentTrackName, currentTrack, currentTrackArtist, spotifyObject):
+def songChangeCheck(currentTrack, spotifyObject):
     trackProgress = currentTrack["progress_ms"]
     trackID = currentTrack["item"]["id"]
     track_duration = spotifyObject.track(trackID)['duration_ms']
 
-    if (track_duration - trackProgress) < 5000:
+    if (track_duration - trackProgress) < 30000: # change 30 seconds to a percentage of the song
         print("Track passed")
     else:
         print("Track skipped")
 
         # add data to database
         # ++ to skipped count
+        # Database will have 3 collumns
+        # {
+        #   "track id" : trackID
+        #   "skipCount" : skipCount
+        #   "reachedThreshhold" : True/False
+        # }
 
 
 def main(spotifyObject):
@@ -55,7 +61,7 @@ def main(spotifyObject):
         if spotifyObject.current_user_playing_track:
             if newCurrentTrackName != currentTrackName and newCurrentTrackArtist != CurrentTrackArtist:
                 print("Song has changed")
-                songChangeCheck(currentTrackName, currentTrack, CurrentTrackArtist, spotifyObject)
+                songChangeCheck(currentTrack, spotifyObject)
 
             currentTrack = newCurrentTrack
             currentTrackName = newCurrentTrackName
@@ -63,7 +69,7 @@ def main(spotifyObject):
         else:
             print(False)
 
-        time.sleep(2)
+        time.sleep(2) # Change for 10 seconds for 30 seconds on real app
 
 # MAIN
 main(spotifyObject)
