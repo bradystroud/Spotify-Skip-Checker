@@ -51,7 +51,7 @@ def songChangeCheck(currentTrack, spotifyObject):
 def main(spotifyObject):
     currentTrackName = spotifyObject.current_user_playing_track()["item"]["name"]
     currentTrack = spotifyObject.current_user_playing_track()
-    CurrentTrackArtist = spotifyObject.current_user_playing_track()["item"]["artists"][0]["name"]
+    currentTrackArtist = spotifyObject.current_user_playing_track()["item"]["artists"][0]["name"]
 
     while True:
         newCurrentTrack = spotifyObject.current_user_playing_track()
@@ -59,13 +59,13 @@ def main(spotifyObject):
         newCurrentTrackName = spotifyObject.current_user_playing_track()["item"]["name"]
 
         if spotifyObject.current_user_playing_track:
-            if newCurrentTrackName != currentTrackName and newCurrentTrackArtist != CurrentTrackArtist:
+            if newCurrentTrackName != currentTrackName and newCurrentTrackArtist != currentTrackArtist:
                 print("Song has changed")
                 songChangeCheck(currentTrack, spotifyObject)
 
             currentTrack = newCurrentTrack
             currentTrackName = newCurrentTrackName
-            CurrentTrackArtist = newCurrentTrackArtist
+            currentTrackArtist = newCurrentTrackArtist
         else:
             print(False)
 
