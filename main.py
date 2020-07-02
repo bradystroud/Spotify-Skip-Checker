@@ -40,7 +40,7 @@ def songChangeCheck(currentTrack, spotifyObject):
 
         # add data to database
         # ++ to skipped count
-        # Database will have 3 collumns
+        # Database will have 3 columns
         # {
         #   "track id" : trackID
         #   "skipCount" : skipCount
