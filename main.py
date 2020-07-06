@@ -18,7 +18,7 @@ from sqlite3 import Error
 #----------------------#
 
 # Setup connection to database and create cursor
-conn = sqlite3.connect('trackDatabase.db') 
+conn = sqlite3.connect('trackDatabase.db') #TODO: Maybe put the DB somewhere that wont annoy the user
 c = conn.cursor() 
 
 
@@ -37,7 +37,7 @@ scope = 'user-read-private user-read-playback-state user-modify-playback-state u
 try:
     token = util.prompt_for_user_token(username, scope, client_id='YOUR CLIENT ID HERE',
                         client_secret='YOUR CLIENT SECRET HERE',
-                        redirect_uri='http://localhost:8888/callback/')
+                        redirect_uri='YOUR REDIRECT URI HERE'')
 except:
     os.remove(f".cache={username}")
     token = util.prompt_for_user_token(username, scope, client_id='YOUR CLIENT ID HERE',
@@ -54,7 +54,7 @@ c.execute("""CREATE TABLE IF NOT EXISTS songInfo (
 );""")
 
 conn.commit()
-conn.close()
+# conn.close()
 
 
 #---------------#
@@ -63,7 +63,8 @@ conn.close()
 
 # removeFromPlaylist() will remove the song from the current playlist and add it to another titled "skipped tracks"
 def removeFromPlaylist(trackID):
-    c.execute("INSERT INTO songInfo (trackID, skipCount) VALUES (?, ?,);", (trackID, +1))
+    c.execute("INSERT INTO songInfo (trackID, skipCount) VALUES (?, ?);", (trackID, +1))
+    conn.commit()
 
 # This functions main purpose is to finalise whether the track has been skipped or not
 # Once it finds out whether the track was skipped or not it will either do nothing or add the song to a database
@@ -118,3 +119,4 @@ def main(spotifyObject):
 #   MAIN   #
 #----------#
 main(spotifyObject)
+conn.close()
