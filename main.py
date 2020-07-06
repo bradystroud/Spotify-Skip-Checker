@@ -21,6 +21,7 @@ from sqlite3 import Error
 conn = sqlite3.connect('trackDatabase.db') 
 c = conn.cursor() 
 
+
 # Set the spotify username manually however can be done by (username = sys.argv[1]  Spotify name in command line after runnong pythong e.g. "python main.py usernameHere")
 # Set the scope of the app, essentially just plugging in the functions wanting to be used for the program
 username = sys.argv[1]
@@ -45,14 +46,24 @@ except:
 
 spotifyObject = spotipy.Spotify(auth=token)
 
+# Create the database if not already created then commit and close the connection
+c.execute("""CREATE TABLE IF NOT EXISTS songInfo (
+    trackID TEXT,
+    skipCount INTEGER,
+    playlist TEXT
+);""")
+
+conn.commit()
+conn.close()
+
 
 #---------------#
 #   FUNCTIONS   #
 #---------------#
 
 # removeFromPlaylist() will remove the song from the current playlist and add it to another titled "skipped tracks"
-def removeFromPlaylist():
-    return
+def removeFromPlaylist(trackID):
+    c.execute("INSERT INTO songInfo (trackID, skipCount) VALUES (?, ?,);", (trackID, +1))
 
 # This functions main purpose is to finalise whether the track has been skipped or not
 # Once it finds out whether the track was skipped or not it will either do nothing or add the song to a database
@@ -66,16 +77,7 @@ def songChangeProcess(currentTrack, spotifyObject):
         print("Track passed")
     else:
         print("Track skipped")
-        removeFromPlaylist()
-
-        # add data to database
-        # ++ to skipped count
-        # Database will have 3 collumns
-        # {
-        #   "track id" : trackID
-        #   "skipCount" : skipCount
-        #   "reachedThreshhold" : True/False
-        # }
+        removeFromPlaylist(trackID)
 
 
 # This functions purpose is to detect if the song is skipped then send off the results to songChangeProcess() to decide
@@ -111,7 +113,7 @@ def main(spotifyObject):
     userTime = int(input("Enter the time distance between each song check: "))
     songChangeCheck(userTime)
 
-    
+
 #----------#
 #   MAIN   #
 #----------#
